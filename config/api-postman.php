@@ -147,6 +147,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Exclude Uri
+    |--------------------------------------------------------------------------
+    |
+    | The routes with corresponding uri are excluded from the export. Does support wildcards fnmatch
+    | For more information, visit: https://www.php.net/manual/en/function.fnmatch.php
+    |
+    */
+
+    'exclude_uri' => ['api/ignored-uri-*'],
+
+    /*
+    |--------------------------------------------------------------------------
     | Disk Driver
     |--------------------------------------------------------------------------
     |

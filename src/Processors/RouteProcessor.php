@@ -50,6 +50,16 @@ class RouteProcessor
         return $this->output;
     }
 
+    private function uriIncluded(string $routeUri): bool
+    {
+        foreach ($this->config['exclude_uri'] as $excludedUri) {
+            if (fnmatch($excludedUri, $routeUri)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * @throws \ReflectionException
      */
@@ -60,15 +70,17 @@ class RouteProcessor
             $middlewares = $route->gatherMiddleware();
 
             foreach ($methods as $method) {
-                $includedMiddleware = false;
+                $included = false;
 
                 foreach ($middlewares as $middleware) {
                     if (in_array($middleware, $this->config['include_middleware'])) {
-                        $includedMiddleware = true;
+                        if (empty($this->config['exclude_uri']) || $this->uriIncluded($route->uri)) {
+                            $included = true;
+                        }
                     }
                 }
 
-                if (empty($middlewares) || ! $includedMiddleware) {
+                if (empty($middlewares) || ! $included) {
                     continue;
                 }
 
