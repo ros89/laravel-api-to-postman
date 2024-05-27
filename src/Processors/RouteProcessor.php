@@ -36,6 +36,26 @@ class RouteProcessor
         $this->resolveAuth();
     }
 
+    protected function sortItemsAlphabetically(array &$items): void
+    {
+        usort($items, function ($a, $b) {
+            return strcmp($a['name'], $b['name']);
+        });
+
+        $sortNested = function (&$array) use (&$sortNested) {
+            foreach ($array as &$item) {
+                if (isset($item['item']) && is_array($item['item'])) {
+                    usort($item['item'], function ($a, $b) {
+                        return strcmp($a['name'], $b['name']);
+                    });
+                    $sortNested($item['item']);
+                }
+            }
+        };
+
+        $sortNested($items);
+    }
+
     public function process(array $output): array
     {
         $this->output = $output;
@@ -45,6 +65,10 @@ class RouteProcessor
         /** @var Route $route */
         foreach ($routes as $route) {
             $this->processRoute($route);
+        }
+
+        if ($this->config['alphabetic_sort']) {
+            $this->sortItemsAlphabetically($this->output['item']);
         }
 
         return $this->output;
