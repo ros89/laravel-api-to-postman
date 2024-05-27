@@ -153,9 +153,13 @@ return [
     | The routes with corresponding uri are excluded from the export. Does support wildcards fnmatch
     | For more information, visit: https://www.php.net/manual/en/function.fnmatch.php
     |
+    | Set "exclude_uri_and_segments" to "true" if you want to ignore also on segment -> f.e. some tree with matching pattern
+    | in api file: ['as' =>.
+    |
     */
 
-    'exclude_uri' => ['api/ignored-uri-*'],
+    'exclude_uri' => ['*foo/bar*'],
+    'exclude_segments' => ['*foo-bar*'],
 
     /*
     |--------------------------------------------------------------------------

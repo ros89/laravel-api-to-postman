@@ -71,6 +71,7 @@ class RouteProcessor
 
             foreach ($methods as $method) {
                 $included = false;
+                $skipMethod = false;
 
                 foreach ($middlewares as $middleware) {
                     if (in_array($middleware, $this->config['include_middleware'])) {
@@ -125,6 +126,20 @@ class RouteProcessor
                             ? Str::of($route->getName())->explode('.')
                             : Str::of($route->uri())->after('api/')->explode('/')
                     )->filter(fn ($value) => ! is_null($value) && $value !== '');
+
+                    if (!empty($this->config['exclude_segments'])) {
+                        foreach ($routeNameSegments as $routeNameSegment) {
+                            foreach ($this->config['exclude_segments'] as $excludedSegment) {
+                                if (fnmatch($excludedSegment, $routeNameSegment)) {
+                                    $skipMethod = true;
+                                }
+                            }
+                        }
+
+                        if ($skipMethod) {
+                            continue;
+                        }
+                    }
 
                     if (! $this->config['crud_folders']) {
                         if (in_array($routeNameSegments->last(), ['index', 'store', 'show', 'update', 'destroy'])) {
